@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{4704CEE2-0E23-421A-B9D1-6EC14562C088}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/SPHCS.compute">
+    <Files>
+      <File FileName="Assets/Scripts/SPH_Solver.cs" Line="98" Column="9" />
+      <File FileName="Assets/Scripts/SPHCS.compute" Line="278" Column="36" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Physics_Engine_1_SimpleSPHWater" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="SPHCS.compute" selected="True" />
+              </Node>
+              <Node name="Shaders" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="0e79fcb2-622e-4848-bbc6-3e82f79f9c84" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
