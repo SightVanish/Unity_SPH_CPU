@@ -163,6 +163,14 @@ public class Particle : MonoBehaviour
         transform.position = position;
 
         acc = Vector3.zero;
+
+        // TODO:
+        // handle collision
+        if (transform.position.y < 0)
+        {
+            //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            transform.position = new Vector3(transform.position.x, -0.25f * transform.position.y, transform.position.z);
+        }
     }
 
     #region KernalFunction
@@ -252,6 +260,7 @@ public class Particle : MonoBehaviour
 
     #endregion
 
+    /*
     #region Collision
     void OnCollisionEnter(Collision coll)
     {
@@ -273,5 +282,6 @@ public class Particle : MonoBehaviour
         }
     }
     #endregion
+    */
 
 }

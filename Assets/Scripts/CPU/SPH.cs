@@ -9,7 +9,7 @@ public class SPH : MonoBehaviour
     public float RespawnDensity = 1.0f;
     public int Amount = 100;
     public int PerRow = 10;
-    public GameObject ParticleParent;
+    public GameObject RespwanPosition;
     private GameObject[] particles;
 
     public Dictionary<Vector3, List<Particle>> hashGrid;
@@ -35,7 +35,7 @@ public class SPH : MonoBehaviour
             float y = i / (PerRow * PerRow) + Random.Range(-0.1f, 0.1f);
             float z = Mathf.CeilToInt(i % (PerRow * PerRow) / PerRow) + Random.Range(-0.1f, 0.1f);
 
-            GameObject go = Instantiate(Prefab, new Vector3(x * RespawnDensity + ParticleParent.transform.position.x, y * RespawnDensity + ParticleParent.transform.position.y, z * RespawnDensity + ParticleParent.transform.position.z), Quaternion.identity, ParticleParent.transform);
+            GameObject go = Instantiate(Prefab, new Vector3(x * RespawnDensity + RespwanPosition.transform.position.x, y * RespawnDensity + RespwanPosition.transform.position.y, z * RespawnDensity + RespwanPosition.transform.position.z), Quaternion.identity);
             go.transform.localScale *= Radius;
 
             particles[i] = go;

@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 578053064}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalPosition: {x: 0, y: 30, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -377,7 +377,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &938138555
 Transform:
   m_ObjectHideFlags: 0
@@ -551,10 +551,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Prefab: {fileID: 3347556550679296403, guid: 56c117c5f369349259116b98b9486479, type: 3}
   Radius: 1
-  RespawnDensity: 3
-  Amount: 10
-  PerRow: 1
-  ParticleParent: {fileID: 578053064}
+  RespawnDensity: 1
+  Amount: 1000
+  PerRow: 10
+  RespwanPosition: {fileID: 578053064}
   gravity: {x: 0, y: -9.81, z: 0}
 --- !u!4 &2051153172
 Transform:
