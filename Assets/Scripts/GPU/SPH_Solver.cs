@@ -101,7 +101,7 @@ public class SPH_Solver : MonoBehaviour
         FindKernels();
         InitComputeShader();
         InitComputeBuffers();
-        //FindKernels();
+        FindKernels();
 
     }
 
@@ -281,9 +281,9 @@ public class SPH_Solver : MonoBehaviour
         computeShaderSPH.Dispatch(computeDensityPressureKernel, numberOfParticles / 100, 1, 1);
         computeShaderSPH.Dispatch(computeForcesKernel, numberOfParticles / 100, 1, 1);
         computeShaderSPH.Dispatch(integrateKernel, numberOfParticles / 100, 1, 1);
-       
 
-        Debug.Log(_argsBuffer);
+
+        //Debug.Log(_argsBuffer);
 
 
         material.SetFloat(SizeProperty, particleRenderSize);

@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{4704CEE2-0E23-421A-B9D1-6EC14562C088}</ProjectGuid>
+    <ProjectGuid>{26A46827-ED79-F000-C0BD-8F0EBACBFB8B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -56,16 +56,18 @@
     <Analyzer Include="/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.Unity/Analyzers/Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Scripts/SPHParticle.cs" />
+    <Compile Include="Assets/Scripts/GPU/SPHParticle.cs" />
     <Compile Include="Assets/Scripts/ShowFPS.cs" />
     <Compile Include="Assets/Scripts/SimpleCameraController.cs" />
-    <Compile Include="Assets/Scripts/SPH_Solver.cs" />
+    <Compile Include="Assets/Scripts/GPU/SPH_Solver.cs" />
     <Compile Include="Assets/Scripts/Quit.cs" />
+    <Compile Include="Assets/Scripts/CPU/Particle.cs" />
+    <Compile Include="Assets/Scripts/CPU/SPH.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/Shaders/GridParticleRenderingShader.shader" />
     <None Include="Assets/Shaders/test.shader" />
-    <None Include="Assets/Scripts/SPHCS.compute" />
+    <None Include="Assets/Scripts/GPU/SPHCS.compute" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
