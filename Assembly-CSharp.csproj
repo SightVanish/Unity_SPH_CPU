@@ -57,10 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/GPU/SPHParticle.cs" />
-    <Compile Include="Assets/Scripts/ShowFPS.cs" />
-    <Compile Include="Assets/Scripts/SimpleCameraController.cs" />
+    <Compile Include="Assets/Scripts/System/ShowFPS.cs" />
+    <Compile Include="Assets/Scripts/System/SimpleCameraController.cs" />
     <Compile Include="Assets/Scripts/GPU/SPH_Solver.cs" />
-    <Compile Include="Assets/Scripts/Quit.cs" />
+    <Compile Include="Assets/Scripts/System/Quit.cs" />
     <Compile Include="Assets/Scripts/CPU/Particle.cs" />
     <Compile Include="Assets/Scripts/CPU/SPH.cs" />
   </ItemGroup>

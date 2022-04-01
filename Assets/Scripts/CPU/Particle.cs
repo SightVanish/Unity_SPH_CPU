@@ -137,14 +137,7 @@ public class Particle : MonoBehaviour
         // pressure acc
         if (!float.IsNaN(f_pressure.x) && !float.IsNaN(f_pressure.y) && !float.IsNaN(f_pressure.z) &&
             !float.IsInfinity(f_pressure.x) && !float.IsInfinity(f_pressure.y) && !float.IsInfinity(f_pressure.z))
-        {
             acc += f_pressure / density;
-
-            //if (float.IsNaN(density))
-                //print(density);
-
-        }
-
 
         // viscosity
         if (!float.IsNaN(f_viscosity.x) && !float.IsNaN(f_viscosity.y) && !float.IsNaN(f_viscosity.z) &&
@@ -164,13 +157,45 @@ public class Particle : MonoBehaviour
 
         acc = Vector3.zero;
 
+
         // TODO:
+        float collisionDamp = 0.2f;
         // handle collision
         if (transform.position.y < 0)
         {
-            //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-            transform.position = new Vector3(transform.position.x, -0.25f * transform.position.y, transform.position.z);
+            transform.position = new Vector3(transform.position.x, -collisionDamp * transform.position.y, transform.position.z);
         }
+        if (transform.position.y > 100f)
+        {
+            transform.position = new Vector3(transform.position.x, 100f - collisionDamp * (transform.position.x - 30f), transform.position.z);
+        }
+        if (transform.position.x < -10f)
+        {
+            transform.position = new Vector3(-10 - collisionDamp * (transform.position.x - (-10f)), transform.position.y, transform.position.z);
+        }
+        if (transform.position.x > 10f)
+        {
+            transform.position = new Vector3(10f - collisionDamp * (transform.position.x - 10f), transform.position.y, transform.position.z);
+        }
+        if (transform.position.z < -10f)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, -10f - collisionDamp * (transform.position.z - (-10f)));
+        }
+        if (transform.position.z > 10f)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, 10f - collisionDamp * (transform.position.z - 10f));
+        }
+
+
+
+
+
+
+
+
+
+
+
     }
 
     #region KernalFunction
