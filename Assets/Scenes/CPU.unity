@@ -552,7 +552,7 @@ MonoBehaviour:
   Prefab: {fileID: 3347556550679296403, guid: 56c117c5f369349259116b98b9486479, type: 3}
   Radius: 1
   RespawnDensity: 1
-  Amount: 1000
+  Amount: 10000
   PerRow: 10
   RespwanPosition: {fileID: 578053064}
   gravity: {x: 0, y: -9.81, z: 0}

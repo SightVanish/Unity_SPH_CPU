@@ -1,5 +1,5 @@
 ﻿<Properties StartupConfiguration="{26A46827-ED79-F000-C0BD-8F0EBACBFB8B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CPU/Particle.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CPU/SPH.cs">
     <Files>
       <File FileName="Assets/Scripts/CPU/Particle.cs" Line="173" Column="10" />
       <File FileName="Assets/Scripts/CPU/SPH.cs" Line="41" Column="25" />
@@ -7,14 +7,22 @@
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="SPH_GPU" expanded="True" selected="True" />
+          <Node name="SPH_GPU" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="CPU" expanded="True">
+                  <Node name="SPH.cs" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="27afea55-c8fc-463e-9cb7-30450247927e" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="bd21e9be-0bcd-4615-b192-9f182dc78287" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -35,7 +35,13 @@ public class SPH : MonoBehaviour
             float y = i / (PerRow * PerRow) + Random.Range(-0.1f, 0.1f);
             float z = Mathf.CeilToInt(i % (PerRow * PerRow) / PerRow) + Random.Range(-0.1f, 0.1f);
 
-            GameObject go = Instantiate(Prefab, new Vector3(x * RespawnDensity + RespwanPosition.transform.position.x, y * RespawnDensity + RespwanPosition.transform.position.y, z * RespawnDensity + RespwanPosition.transform.position.z), Quaternion.identity);
+            GameObject go = Instantiate(Prefab,
+                new Vector3(x * RespawnDensity + RespwanPosition.transform.position.x,
+                            y * RespawnDensity + RespwanPosition.transform.position.y,
+                            z * RespawnDensity + RespwanPosition.transform.position.z),
+                Quaternion.identity,
+                RespwanPosition.transform);
+
             go.transform.localScale *= Radius;
 
             particles[i] = go;
