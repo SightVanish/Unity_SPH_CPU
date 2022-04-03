@@ -63,6 +63,7 @@
     <Compile Include="Assets/Scripts/System/Quit.cs" />
     <Compile Include="Assets/Scripts/CPU/Particle.cs" />
     <Compile Include="Assets/Scripts/CPU/SPH.cs" />
+    <Compile Include="Assets/Scripts/CPU/test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/Shaders/GridParticleRenderingShader.shader" />
