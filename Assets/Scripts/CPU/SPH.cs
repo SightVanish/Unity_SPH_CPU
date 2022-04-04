@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class SPH : MonoBehaviour
 {
+    [Header("MLS")]
+    public bool MLS = false;
     [Header("Respawn Particlees")]
     public GameObject Prefab;
     public float Radius = 1.0f;
@@ -41,6 +44,7 @@ public class SPH : MonoBehaviour
                             z * RespawnDensity + RespwanPosition.transform.position.z),
                 Quaternion.identity,
                 RespwanPosition.transform);
+            go.name = "Particle" + i;
 
             go.transform.localScale *= Radius;
 

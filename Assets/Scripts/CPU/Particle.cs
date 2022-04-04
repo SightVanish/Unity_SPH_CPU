@@ -1,5 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
+using Matrix = MathNet.Numerics.LinearAlgebra.Matrix<double>;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 public class Particle : MonoBehaviour
 {
@@ -40,6 +43,7 @@ public class Particle : MonoBehaviour
 
     private float POLY6;
     private float SPIKY;
+    private Matrix M; // moment matrix
 
     private List<Particle> neighbours;
     private float elpasedTime = 0.0f;
@@ -70,6 +74,7 @@ public class Particle : MonoBehaviour
         extraTime = 0.0f;
         POLY6 = 315.0f / (64.0f * Mathf.PI * Mathf.Pow(h, 9));
         SPIKY = -45.0f / (Mathf.PI * Mathf.Pow(h, 6));
+        M = new DenseMatrix(4, 4);
     }
 
     private void FixedUpdate()
@@ -109,14 +114,47 @@ public class Particle : MonoBehaviour
     // update particle position
     private void UpdatePositions()
     {
-        density = 0.0f;
         f_pressure = f_viscosity = Vector3.zero;
 
-        foreach (var nei in neighbours)
+        // density
+        if (Manager.MLS)
         {
-            // TODO: how to compute density, if there is only this in neighbours
-            density += nei.mass * Wploy6(nei.gameObject);
+            // TODO: what if M is not invertible
+            M = MomentMatrix_Optimized();
+            if (M.Determinant() != 0)
+            {
+                density = 0.0f;
+                foreach (var nei in neighbours)
+                {
+                    density += nei.mass * PHI_Optimized(nei.gameObject);
+                }
+            }
+            else
+                Debug.Log("M is not invertible");
         }
+        else
+        {
+            density = 0.0f;
+            foreach (var nei in neighbours)
+            {
+                // TODO: how to compute density, if there is only this in neighbours
+                density += nei.mass * Wploy6(nei.gameObject);
+            }
+        }
+
+        //// DEBUG
+        //if (this.gameObject.name == "Particle0")
+        //{
+        //    using (StreamWriter sw = new StreamWriter("log.txt"))
+        //    {
+        //        sw.WriteLine(this.gameObject.name);
+        //        sw.WriteLine(" ");
+        //        sw.WriteLine(density);
+        //    }
+        //}
+        if (density==0)
+            print(density);
+
 
         // pressure
         // TODO: the result may be negative
@@ -189,13 +227,6 @@ public class Particle : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
     }
 
     #region KernalFunction
@@ -230,8 +261,74 @@ public class Particle : MonoBehaviour
     }
     #endregion
 
+    #region MLS
+    private float PHI(GameObject particle)
+    {
+        // order = 1
+        Matrix p = new DenseMatrix(4, 1);
+        Matrix p_i = new DenseMatrix(4, 1);
+        // p = [1, x, y, z]^T
+        p[0, 0] = 1f;
+        p[1, 0] = transform.position.x;
+        p[2, 0] = transform.position.y;
+        p[3, 0] = transform.position.z;
+        p_i[0, 0] = 1f;
+        p_i[1, 0] = particle.transform.position.x;
+        p_i[2, 0] = particle.transform.position.y;
+        p_i[3, 0] = particle.transform.position.z;
 
-    #region NeighbourSeach
+        var phi = Wploy6(particle) * p.Transpose() * M.Inverse() * p_i;
+
+        return (float)phi[0, 0];
+    }
+    private Matrix MomentMatrix()
+    {
+        Matrix M = new DenseMatrix(4, 4);
+        Matrix p = new DenseMatrix(4, 1);
+        foreach (var nei in neighbours)
+        {
+            p[0, 0] = 1f;
+            p[1, 0] = nei.transform.position.x;
+            p[2, 0] = nei.transform.position.y;
+            p[3, 0] = nei.transform.position.z;
+            M += Wploy6(nei.gameObject) * p * p.Transpose();
+        }
+        return M;
+    }
+    private float PHI_Optimized(GameObject particle)
+    {
+        // order = 1
+        Matrix p = new DenseMatrix(4, 1);
+        Matrix p_i = new DenseMatrix(4, 1);
+        // p = [1, x, y, z]^T
+        p[0, 0] = 1f; p[1, 0] = 0; p[2, 0] = 0; p[3, 0] = 0;
+        p_i[0, 0] = 1f;
+        p_i[1, 0] = (particle.transform.position.x - transform.position.x) / h;
+        p_i[2, 0] = (particle.transform.position.y - transform.position.y) / h;
+        p_i[3, 0] = (particle.transform.position.z - transform.position.z) / h;
+
+        var phi = Wploy6(particle) * p.Transpose() * M.Inverse() * p_i;
+
+        return (float)phi[0, 0];
+    }
+    private Matrix MomentMatrix_Optimized()
+    {
+        Matrix M = new DenseMatrix(4, 4);
+        Matrix p = new DenseMatrix(4, 1);
+        foreach (var nei in neighbours)
+        {
+            p[0, 0] = 1f;
+            p[1, 0] = (nei.transform.position.x - transform.position.x) / h;
+            p[2, 0] = (nei.transform.position.y - transform.position.y) / h;
+            p[3, 0] = (nei.transform.position.z - transform.position.z) / h;
+            M += Wploy6(nei.gameObject) * p * p.Transpose();
+        }
+        return M;
+    }
+
+    #endregion
+
+    #region NeighbourSearch
     // update Manager.hashGrid
     private void SpatialHash()
     {
