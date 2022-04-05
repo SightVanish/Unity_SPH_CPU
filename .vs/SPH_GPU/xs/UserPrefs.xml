@@ -1,7 +1,8 @@
 ﻿<Properties StartupConfiguration="{26A46827-ED79-F000-C0BD-8F0EBACBFB8B}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CPU/SPH.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CPU/Particle.cs">
     <Files>
       <File FileName="Assets/Scripts/CPU/SPH.cs" Line="28" Column="1" />
+      <File FileName="Assets/Scripts/CPU/Particle.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,7 +22,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="fb7e01a8-9da8-4f27-9a69-8c27149f522a" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="4c645860-8256-492b-9385-45c010707d37" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
