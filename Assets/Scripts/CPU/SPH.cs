@@ -16,7 +16,9 @@ public class SPH : MonoBehaviour
     private GameObject[] particles;
 
     public Dictionary<Vector3, List<Particle>> hashGrid;
-    
+
+    public GameObject[] walls;
+    public List<SPHCollision> collisions;
 
     [Header("Constants")]
     public Vector3 gravity = new Vector3(0.0f, -9.81f, 0.0f);
@@ -27,6 +29,9 @@ public class SPH : MonoBehaviour
         hashGrid = new Dictionary<Vector3, List<Particle>>();
 
         ParticleRespawn();
+
+        //GetWalls();
+        
     }
     private void ParticleRespawn()
     {
@@ -52,5 +57,11 @@ public class SPH : MonoBehaviour
         }
     }
 
+    private void GetWalls()
+    {
+        walls = GameObject.FindGameObjectsWithTag("Wall");
+        foreach (var w in walls)
+            collisions.Add(w.GetComponent<SPHCollision>());
+    }
 
 }

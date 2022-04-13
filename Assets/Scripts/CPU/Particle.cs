@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using Matrix = MathNet.Numerics.LinearAlgebra.Matrix<double>;
 using MathNet.Numerics.LinearAlgebra.Double;
+using System;
+using System.Threading;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class Particle : MonoBehaviour
 {
@@ -54,6 +58,9 @@ public class Particle : MonoBehaviour
     private float timeStep = 0.05f;
     private float timeStep2;
     private int numchunks; // render #numchunks for each frame
+
+    // parallel
+    private Vector3 currentPosition;
     #endregion
 
     private void Start()
@@ -67,6 +74,7 @@ public class Particle : MonoBehaviour
         Manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<SPH>();
         lastPosition = position = transform.position;
         acc = velocity = Vector3.zero;
+        currentPosition = Vector3.zero;
 
         timeStep2 = timeStep * timeStep;
         minDist2 = minDist * Manager.Radius * minDist * Manager.Radius;
@@ -88,13 +96,14 @@ public class Particle : MonoBehaviour
 
         // neighbour search
         SpatialHash();
-        neighbours = GetNeighbourParticles(gridPos);
+        GetNeighbourParticles();
 
         for (int i = 0; i < numchunks; i++)
         {
             UpdatePositions();
         }
 
+        /*
         // add repulsion and attraction
         // TODO: add attraction
         replusiveOffset = Vector3.zero;
@@ -108,6 +117,7 @@ public class Particle : MonoBehaviour
                 replusiveOffset += 0.5f * dist.normalized * (minDist2 - dist.sqrMagnitude);
         }
         transform.position += replusiveOffset;
+        */
 
     }
 
@@ -124,10 +134,17 @@ public class Particle : MonoBehaviour
             if (M.Determinant() != 0)
             {
                 density = 0.0f;
+                density =
+                neighbours.AsParallel().Sum(x =>
+                {
+                    return mass * PHI_Optimized_Parallel(x.currentPosition);
+                });
+                /*
                 foreach (var nei in neighbours)
                 {
                     density += nei.mass * PHI_Optimized(nei.gameObject);
                 }
+                */
             }
             else
                 Debug.Log("M is not invertible");
@@ -135,11 +152,21 @@ public class Particle : MonoBehaviour
         else
         {
             density = 0.0f;
+            density =
+                neighbours.AsParallel().Sum(x =>
+                {
+                    return mass * Wploy6_parallel(x.currentPosition);
+                });
+                
+            /*
             foreach (var nei in neighbours)
             {
                 // TODO: how to compute density, if there is only this in neighbours
                 density += nei.mass * Wploy6(nei.gameObject);
             }
+            if (Mathf.Abs(density1 - density) > 1e5)
+                Debug.Log("density parallel failed.");
+            */
         }
 
         //// DEBUG
@@ -153,7 +180,7 @@ public class Particle : MonoBehaviour
         //    }
         //}
         if (density==0)
-            print(density);
+            print("density is 0.");
 
 
         // pressure
@@ -161,6 +188,7 @@ public class Particle : MonoBehaviour
         pressure = K * (density - RestDensity);
 
         // force
+        // TODO: parallel
         foreach (var nei in neighbours)
         {
             // if nei == this, the value calculated is 0
@@ -196,37 +224,9 @@ public class Particle : MonoBehaviour
         acc = Vector3.zero;
 
 
-        // TODO:
-        float collisionDamp = 0.2f;
-        // handle collision
-        if (transform.position.y < 0)
-        {
-            transform.position = new Vector3(transform.position.x, -collisionDamp * transform.position.y, transform.position.z);
-        }
-        if (transform.position.y > 100f)
-        {
-            transform.position = new Vector3(transform.position.x, 100f - collisionDamp * (transform.position.x - 30f), transform.position.z);
-        }
-        if (transform.position.x < -10f)
-        {
-            transform.position = new Vector3(-10 - collisionDamp * (transform.position.x - (-10f)), transform.position.y, transform.position.z);
-        }
-        if (transform.position.x > 10f)
-        {
-            transform.position = new Vector3(10f - collisionDamp * (transform.position.x - 10f), transform.position.y, transform.position.z);
-        }
-        if (transform.position.z < -10f)
-        {
-            transform.position = new Vector3(transform.position.x, transform.position.y, -10f - collisionDamp * (transform.position.z - (-10f)));
-        }
-        if (transform.position.z > 10f)
-        {
-            transform.position = new Vector3(transform.position.x, transform.position.y, 10f - collisionDamp * (transform.position.z - 10f));
-        }
-
-
-
-
+        SimpleCollision();
+        // ComputeCollision();
+        currentPosition = transform.position;
     }
 
     #region KernalFunction
@@ -239,6 +239,17 @@ public class Particle : MonoBehaviour
             return 0;
         else
             return POLY6 * Mathf.Pow(h * h - r2, 3);
+    }
+
+    private float Wploy6_parallel(Vector3 particle)
+    {
+        Vector3 dist = currentPosition - particle;
+        float r2 = Vector3.Dot(dist, dist);
+
+        if (r2 >= h * h)
+            return 0;
+        else
+            return POLY6 *Mathf.Pow(h * h - r2, 3);
     }
 
     private Vector3 d_Wspiky(GameObject particle)
@@ -311,10 +322,27 @@ public class Particle : MonoBehaviour
 
         return (float)phi[0, 0];
     }
+    private float PHI_Optimized_Parallel(Vector3 particle)
+    {
+        // order = 1
+        Matrix p = new DenseMatrix(4, 1);
+        Matrix p_i = new DenseMatrix(4, 1);
+        // p = [1, x, y, z]^T
+        p[0, 0] = 1f; p[1, 0] = 0; p[2, 0] = 0; p[3, 0] = 0;
+        p_i[0, 0] = 1f;
+        p_i[1, 0] = (particle.x - currentPosition.x) / h;
+        p_i[2, 0] = (particle.y - currentPosition.y) / h;
+        p_i[3, 0] = (particle.z - currentPosition.z) / h;
+
+        var phi = Wploy6_parallel(particle) * p.Transpose() * M.Inverse() * p_i;
+
+        return (float)phi[0, 0];
+    }
     private Matrix MomentMatrix_Optimized()
     {
         Matrix M = new DenseMatrix(4, 4);
         Matrix p = new DenseMatrix(4, 1);
+        // TODO: parallel
         foreach (var nei in neighbours)
         {
             p[0, 0] = 1f;
@@ -355,19 +383,18 @@ public class Particle : MonoBehaviour
     }
 
     // return the neighbour particles in pos
-    private List<Particle> GetNeighbourParticles(Vector3 pos)
+    private void GetNeighbourParticles()
     {
-        List<Particle> lp = new List<Particle>();
+        neighbours = new List<Particle>();
         // only consider 6 nearest grid cube
-        AddParticle(pos, ref lp);
-        AddParticle(new Vector3(pos.x + 1, pos.y, pos.z), ref lp); // right
-        AddParticle(new Vector3(pos.x - 1, pos.y, pos.z), ref lp); // left
-        AddParticle(new Vector3(pos.x, pos.y, pos.z + 1), ref lp); // front
-        AddParticle(new Vector3(pos.x, pos.y, pos.z - 1), ref lp); // back
-        AddParticle(new Vector3(pos.x, pos.y + 1, pos.z), ref lp); // up
-        AddParticle(new Vector3(pos.x, pos.y - 1, pos.z), ref lp); // down
+        AddParticle(gridPos, ref neighbours);
+        AddParticle(new Vector3(gridPos.x + 1, gridPos.y, gridPos.z), ref neighbours); // right
+        AddParticle(new Vector3(gridPos.x - 1, gridPos.y, gridPos.z), ref neighbours); // left
+        AddParticle(new Vector3(gridPos.x, gridPos.y, gridPos.z + 1), ref neighbours); // front
+        AddParticle(new Vector3(gridPos.x, gridPos.y, gridPos.z - 1), ref neighbours); // back
+        AddParticle(new Vector3(gridPos.x, gridPos.y + 1, gridPos.z), ref neighbours); // up
+        AddParticle(new Vector3(gridPos.x, gridPos.y - 1, gridPos.z), ref neighbours); // down
 
-        return lp;
     }
 
     // add the particles in Manager.hashGrid[pos] to lp
@@ -376,14 +403,17 @@ public class Particle : MonoBehaviour
         if (Manager.hashGrid.ContainsKey(pos))
         {
             foreach (var particle in Manager.hashGrid[pos])
+            {
                 lp.Add(particle);
+            }
         }
     }
 
     #endregion
 
-    /*
+
     #region Collision
+    /*
     void OnCollisionEnter(Collision coll)
     {
 
@@ -403,7 +433,65 @@ public class Particle : MonoBehaviour
             transform.position = coll.contacts[0].point + 0.525f * coll.contacts[0].normal.normalized;
         }
     }
-    #endregion
     */
 
+    private void SimpleCollision()
+    {
+        // TODO:
+        float collisionDamp = 0f;
+        // handle collision
+        if (transform.position.y < 0)
+        {
+            lastPosition = transform.position;
+            transform.position = new Vector3(transform.position.x, -collisionDamp * transform.position.y, transform.position.z);
+        }
+        //if (transform.position.y > 100f)
+        //{
+        //    transform.position = new Vector3(transform.position.x, 100f - collisionDamp * (transform.position.x - 30f), transform.position.z);
+        //}
+        if (transform.position.x < -15f)
+        {
+            lastPosition = transform.position;
+            transform.position = new Vector3(-15f - collisionDamp * (transform.position.x - (-15f)), transform.position.y, transform.position.z);
+        }
+        if (transform.position.x > 15f)
+        {
+            lastPosition = transform.position;
+            transform.position = new Vector3(15f - collisionDamp * (transform.position.x - 15f), transform.position.y, transform.position.z);
+        }
+        if (transform.position.z < -15f)
+        {
+            lastPosition = transform.position;
+            transform.position = new Vector3(transform.position.x, transform.position.y, -15f - collisionDamp * (transform.position.z - (-15f)));
+        }
+        if (transform.position.z > 15f)
+        {
+            lastPosition = transform.position;
+            transform.position = new Vector3(transform.position.x, transform.position.y, 15f - collisionDamp * (transform.position.z - 15f));
+        }
+    }
+
+    private void ComputeCollision()
+    {
+        foreach (var collider in Manager.collisions)
+        {
+            float penetrationLength;
+            if (Intersection(collider, out penetrationLength))
+            {
+                lastPosition = transform.position;
+                transform.position = transform.position - collider.penetrationNormal * Mathf.Abs(penetrationLength);
+            }
+        }
+    }
+
+    private bool Intersection(SPHCollision collider, out float penetrationLength)
+    {
+        Vector3 colliderProjection = collider.position - transform.position;
+        penetrationLength = Mathf.Abs(Vector3.Dot(colliderProjection, collider.penetrationNormal)) - (Manager.Radius / 2.0f);
+
+        return penetrationLength < 0.0f
+            && Mathf.Abs(Vector3.Dot(colliderProjection, collider.right)) < collider.scale.x
+            && Mathf.Abs(Vector3.Dot(colliderProjection, collider.up)) < collider.scale.y;
+    }
+    #endregion
 }

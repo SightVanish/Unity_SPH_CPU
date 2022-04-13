@@ -387,7 +387,7 @@ MonoBehaviour:
   radius: 2
   particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   particleRenderSize: 1
-  material: {fileID: 2100000, guid: 518351db4e4a80c4cb0a22aa7f43db20, type: 2}
+  material: {fileID: 2100000, guid: 1f7c99bc0129941149dfef2c6b972233, type: 2}
   mass: 1
   gasConstant: 1800
   restDensity: 2
